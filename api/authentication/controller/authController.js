@@ -11,7 +11,6 @@ var loginFunction = async function (req, res) {
         if (!user) {
             res.status(401).json({msg: "could not find user"});
         }
-
         // Function defined at bottom of app.js
         const isValid = utils.validPassword(req.body.password, user.hash, user.salt);
 
@@ -22,75 +21,57 @@ var loginFunction = async function (req, res) {
             res.status(200).json({success: true, token: tokenObject.token, expiresIn: tokenObject.expires});
 
         } else {
-
             res.status(401).json({success: false, msg: "you entered the wrong password"});
-
         }
     } catch (err) {
         res.status(401).json({success: false, msg: err});
     }
-}
+};
+
 var registerFunction = async function (req, res) {
+    try {
 
+        const saltHash = utils.genPassword(req.body.password);
+        const salt = saltHash.salt;
+        const hash = saltHash.hash;
 
+        var rol = await Rol.findOne({rolname: req.body.rolname});
+        if (!req.isAuthenticated() && rol.rolname == "estudiante") {
 
-
-            const saltHash = utils.genPassword(req.body.password);
-
-            const salt = saltHash.salt;
-            const hash = saltHash.hash;
-
-            var rol = await
-                Rol.findOne({rolname: req.body.rolname});
-            if (!req.isAuthenticated() && rol.rolname == "estudiante") {
-
-
-                const newUser = new User({
-                    username: req.body.username,
-                    hash: hash,
-                    salt: salt,
-                    rol: rol._id
-                });
-
-                await
-                    newUser.save()
-                res.json({success: true, user: newUser});
-
-            }
-
-else if (req.isAuthenticated())
-    {
-        res.status(401).json({success: true, msg: "you are register"});
-        try {
-            const saltHash = utils.genPassword(req.body.password);
-
-            const salt = saltHash.salt;
-            const hash = saltHash.hash;
-
-            var rol = await
-                Rol.findOne({rolname: req.body.rolname});
             const newUser = new User({
                 username: req.body.username,
                 hash: hash,
                 salt: salt,
                 rol: rol._id
             });
-
             await
-                newUser.save()
+                newUser.save();
             res.json({success: true, user: newUser});
-
-        } catch (err) {
-            res.json({success: false, msg: err});
-
         }
+        else if (req.isAuthenticated()) {
+
+            res.status(200).json({success: true, msg: "you are register"});
+
+            const saltHash = utils.genPassword(req.body.password);
+            const salt = saltHash.salt;
+            const hash = saltHash.hash;
+
+            var rol = await Rol.findOne({rolname: req.body.rolname});
+            const newUser = new User({
+                username: req.body.username,
+                hash: hash,
+                salt: salt,
+                rol: rol._id
+            });
+            await newUser.save();
+        }
+        else
+            res.status(401).json({success: false, msg: "you are not register "});
+
+    } catch (err) {
+        res.json({success: false, msg: err});
     }
-    else
-                res.status(401).json({success: false, msg: "you are not register "});
-
 };
-
-
 
 module.exports.login = loginFunction;
 module.exports.register = registerFunction;
