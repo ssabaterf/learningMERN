@@ -46,11 +46,9 @@ var registerFunction = async function (req, res) {
             });
             await
                 newUser.save();
-            res.json({success: true, user: newUser});
+            res.status(200).json({success: true, user: newUser});
         }
         else if (req.isAuthenticated()) {
-
-            res.status(200).json({success: true, msg: "you are register"});
 
             const saltHash = utils.genPassword(req.body.password);
             const salt = saltHash.salt;
@@ -64,9 +62,10 @@ var registerFunction = async function (req, res) {
                 rol: rol._id
             });
             await newUser.save();
+            res.status(200).json({success: true, msg: "new user created", user: newUser});
         }
         else
-            res.status(401).json({success: false, msg: "you are not register "});
+            res.status(401).json({success: false, msg: "your user not exists, please log-in"}); //El usuario no existe, por favor registrese
 
     } catch (err) {
         res.json({success: false, msg: err});
