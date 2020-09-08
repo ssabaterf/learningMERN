@@ -2,8 +2,10 @@ var express = require('express');
 var router = express.Router();
 
 const authController = require('../controller/authController');
+const passport = require('passport');
 
-router.post('/login', authController.login); /*Crear escuela*/
-router.post('/register', authController.register); /*Obtener el listado de las escuelas*/
+router.post('/login', authController.login); /*Login*/
+router.post('/register', authController.register); /*Registrar*/
+router.post('/registerSecure', passport.authenticate('jwt', { session: false }), authController.registerSecure);
 
 module.exports = router;

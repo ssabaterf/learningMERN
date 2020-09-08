@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 const User = require('../model/userModel');
 const Rol = require('../model/rolModel');
-const passport = require('passport');
 const utils = require('../../../lib/utils');
 
 var loginFunction = async function (req, res) {
@@ -28,9 +27,8 @@ var loginFunction = async function (req, res) {
     }
 };
 
-var registerFunction = async function (req, res) {
+var registerStudent = async function (req, res) {
     try {
-
         const saltHash = utils.genPassword(req.body.password);
         const salt = saltHash.salt;
         const hash = saltHash.hash;
@@ -48,29 +46,32 @@ var registerFunction = async function (req, res) {
                 newUser.save();
             res.status(200).json({success: true, user: newUser});
         }
-        else if (req.isAuthenticated()) {
-
-            const saltHash = utils.genPassword(req.body.password);
-            const salt = saltHash.salt;
-            const hash = saltHash.hash;
-
-            var rol = await Rol.findOne({rolname: req.body.rolname});
-            const newUser = new User({
-                username: req.body.username,
-                hash: hash,
-                salt: salt,
-                rol: rol._id
-            });
-            await newUser.save();
-            res.status(200).json({success: true, msg: "new user created", user: newUser});
-        }
-        else
-            res.status(401).json({success: false, msg: "your user not exists, please log-in"}); //El usuario no existe, por favor registrese
-
     } catch (err) {
-        res.json({success: false, msg: err});
+        res.status(401).json({success: false, Status: 'your user not exists, please log-in', msg: err});
+    }
+};
+
+var registerFunction = async function (req, res) {
+    try {
+        const saltHash = utils.genPassword(req.body.password);
+        const salt = saltHash.salt;
+        const hash = saltHash.hash;
+
+        var rol = await Rol.findOne({rolname: req.body.rolname});
+        const newUser = new User({
+            username: req.body.username,
+            hash: hash,
+            salt: salt,
+            rol: rol._id
+        });
+        await newUser.save();
+        res.status(200).json({success: true, user: newUser, msg: "new user created"});
+
+    } catch (e) {
+        res.status(401).json({Status: 'your user not exists, please log-in', error: e});
     }
 };
 
 module.exports.login = loginFunction;
-module.exports.register = registerFunction;
+module.exports.register = registerStudent;
+module.exports.registerSecure = registerFunction;

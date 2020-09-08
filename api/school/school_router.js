@@ -1,6 +1,6 @@
 var express = require('express');
 const passport = require('passport');
-const validateRoute = require('../../passport/validateRole')
+const validateRoute = require('../../passport/validateRole');
 var api_school = express();
 
 var estudianteModule = require('./route/estudiante_router');

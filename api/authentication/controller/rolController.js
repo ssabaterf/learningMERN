@@ -65,10 +65,10 @@ var updateFunction = async function (req, res) {
     try {
         var rol = await Rol.findOne({_id: req.params.id});
         rol.set({
-            rolname: req.body.rolname ? req.body.rolname : Rol.rolname,
-            routes: req.body.routes ? req.body.routes : Rol.routes,
+            rolname: req.body.rolname ? req.body.rolname : rol.rolname,
+            routes: req.body.routes ? req.body.routes : rol.routes,
         });
-        await Rol.save();
+        await rol.save();
         res.status(200).json({Status: 'OK', Rol: rol});
     } catch (e) {
         res.status(401).json({Status: 'Failed', error: e});

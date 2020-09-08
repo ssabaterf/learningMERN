@@ -1,4 +1,5 @@
-const rolModel = require('../api/authentication/model/rolModel')
+const rolModel = require('../api/authentication/model/rolModel');
+
 var isValidLogin = async function(req, res, next) {
     try {
         var user = req.user._doc;
