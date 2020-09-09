@@ -1,11 +1,13 @@
-var express = require('express');
-var api = express();
+const express = require('express');
+const api = express();
 
 /* Rutas api */
 
-var schoolModule = require('./school/school_router');
-var authModule = require('./authentication/api_auth');
+const schoolModule = require('./school/school_router');
+const authModule = require('./authentication/api_auth');
+const uploadModule = require('./upload/api_up');
 
+api.use('/upload', uploadModule);
 api.use('/school', schoolModule);
 api.use('/auth', authModule);
 

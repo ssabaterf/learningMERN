@@ -8,13 +8,16 @@ cors = require('cors');
 var apiRouter = require('./api/api');
 var mongoose = require('mongoose');
 
+const busboy = require('connect-busboy');
+const busboyBodyParser = require('busboy-body-parser');
+
 mongoose.connect('mongodb://localhost:27017/LearningProject')
     .then(x => { console.log('Success MongoDB') })
     .catch(x => console.error(x));
 
 require('./passport/config')(passport);
 
-var app = express();
+const app = express();
 app.use(cors());
 app.use(function(req, res, next) {
     // Website you wish to allow to connect
@@ -41,9 +44,15 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//File Upload
+app.use(busboy());
+app.use(busboyBodyParser());
+
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.use('/api', apiRouter);
+
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     next(createError(404));
