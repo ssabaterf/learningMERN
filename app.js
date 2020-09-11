@@ -8,8 +8,8 @@ cors = require('cors');
 var apiRouter = require('./api/api');
 var mongoose = require('mongoose');
 
-const busboy = require('connect-busboy');
-const busboyBodyParser = require('busboy-body-parser');
+//const fileUpload = require('express-fileupload');
+const fileup = require('multer');
 
 mongoose.connect('mongodb://localhost:27017/LearningProject')
     .then(x => { console.log('Success MongoDB') })
@@ -45,13 +45,12 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //File Upload
-app.use(busboy());
-app.use(busboyBodyParser());
+//app.use(fileUpload());
+//app.use(fileup());
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.use('/api', apiRouter);
-
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
