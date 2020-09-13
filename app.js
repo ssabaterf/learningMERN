@@ -7,9 +7,12 @@ const passport = require('passport');
 cors = require('cors');
 var apiRouter = require('./api/api');
 var mongoose = require('mongoose');
+const formidable = require('formidable');
 
 //const fileUpload = require('express-fileupload');
-const fileup = require('multer');
+//const fileup = require('multer');
+//const busboy = require('connect-busboy');
+//const busboy_body_parser = require('busboy-body-parser');
 
 mongoose.connect('mongodb://localhost:27017/LearningProject')
     .then(x => { console.log('Success MongoDB') })
@@ -46,7 +49,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 //File Upload
 //app.use(fileUpload());
-//app.use(fileup());
+// app.use(busboy);
+// app.use(busboy_body_parser());
 
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
