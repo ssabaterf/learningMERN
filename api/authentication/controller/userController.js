@@ -3,6 +3,7 @@ const userModel = require('../model/userModel');
 const rolModel = require('../model/rolModel');
 const passport = require('passport');
 const utils = require('../../../lib/utils');
+const fs = require('fs');
 
 var listFunction = async function(req, res) {
     try {
@@ -30,6 +31,7 @@ var updateFunction = async function(req, res) {
             hash: req.body.hash ? req.body.hash : user.hash,
             salt: req.body.salt ? req.body.salt : user.salt,
             rol:req.body.rol ? req.body.rol : user.rol,
+            image: req.file.path ? req.file.path : user.image
         });
         await user.save();
         res.status(200).json({ Status: 'OK', User: user });
@@ -41,6 +43,10 @@ var updateFunction = async function(req, res) {
 var deleteFunction = async function(req, res) {
     try {
         var list = await userModel.findOne({ _id: req.params.id });
+        const imagePath = list.image;
+        fs.unlink(imagePath, e => {
+            console.log(e);
+        });
         var stats = await list.remove();
         res.status(200).json({ Status: 'OK', Stat: stats });
     } catch (e) {

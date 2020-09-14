@@ -1,10 +1,12 @@
 const estudianteModel = require('../model/estudianteModel');
+const fs = require('fs');
 
 var createFunction = async function(req, res) {
     try {
         var estudianteNew = {
             nombre: req.body.nombre,
             edad: req.body.edad,
+            image: req.file.path,
         };
         if (req.body.notas)
             estudianteNew.notas = req.body.notas;
@@ -42,6 +44,7 @@ var updateFunction = async function(req, res) {
             nombre: req.body.nombre ? req.body.nombre : estudiante.nombre,
             edad: req.body.edad ? req.body.edad : estudiante.edad,
             notas: req.body.notas ? req.body.notas : estudiante.notas,
+            image: req.file.path ? req.file.path : estudiante.image
         });
         await estudiante.save();
         res.status(200).json({ Status: 'OK', Est: estudiante });
@@ -53,6 +56,10 @@ var updateFunction = async function(req, res) {
 var deleteFunction = async function(req, res) {
     try {
         var list = await estudianteModel.findOne({ _id: req.params.id });
+        const imagePath = list.image;
+        fs.unlink(imagePath, e => {
+            console.log(e);
+        });
         var stats = await list.remove();
         res.status(200).json({ Status: 'OK', Stat: stats });
     } catch (e) {

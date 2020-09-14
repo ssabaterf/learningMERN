@@ -7,12 +7,8 @@ const passport = require('passport');
 cors = require('cors');
 var apiRouter = require('./api/api');
 var mongoose = require('mongoose');
-const formidable = require('formidable');
-
-//const fileUpload = require('express-fileupload');
-//const fileup = require('multer');
-//const busboy = require('connect-busboy');
-//const busboy_body_parser = require('busboy-body-parser');
+const fileup = require('multer');
+const fs = require('fs');
 
 mongoose.connect('mongodb://localhost:27017/LearningProject')
     .then(x => { console.log('Success MongoDB') })
@@ -47,11 +43,6 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-//File Upload
-//app.use(fileUpload());
-// app.use(busboy);
-// app.use(busboy_body_parser());
-
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
 app.use('/api', apiRouter);
@@ -63,6 +54,11 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
+    if (req.file){
+        fs.unlink(req.file.path, (err) => {
+            console.log(err);
+        })
+    }
     // set locals, only providing error in development
     res.locals.message = err.message;
     res.locals.error = req.app.get('env') === 'development' ? err : {};
