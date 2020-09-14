@@ -3,6 +3,7 @@ const User = require('../model/userModel');
 const Rol = require('../model/rolModel');
 const utils = require('../../../lib/utils');
 const nodemailer = require('nodemailer');
+const uuid = require('uuid/v1');
 
 const transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -45,23 +46,27 @@ var registerStudent = async function (req, res) {
         var rol = await Rol.findOne({rolname: req.body.rolname});
         if (!req.isAuthenticated() && rol.rolname == "estudiante") {
 
-            const newUser = new User({
-                username: req.body.username,
-                hash: hash,
-                salt: salt,
-                rol: rol._id,
-                image: req.file.path
-            });
+            const tokenUser = uuid();
             const mailOptions = {
                 from: 'jaleonp93@gmail.com',
-                to: 'jaleonp93@gmail.com',
+                to: req.body.email,
                 subject: 'Sending Email using Node.js',
-                text: 'That was easy!'
+                text: 'That was easy!\nValidate: your user with: '+tokenUser
             };
            await transporter.sendMail(mailOptions, err =>{
                console.log(err);
             });
 
+            const newUser = new User({
+                username: req.body.username,
+                hash: hash,
+                salt: salt,
+                rol: rol._id,
+                image: '',
+                token: tokenUser,
+                estado: 'Waiting Validation',
+                email: req.body.email
+            });
             await
                 newUser.save();
             res.status(200).json({success: true, user: newUser});

@@ -5,18 +5,26 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const passport = require('passport');
 cors = require('cors');
-var apiRouter = require('./api/api');
 var mongoose = require('mongoose');
-const fileup = require('multer');
 const fs = require('fs');
+const fileUpload = require('express-fileupload');
 
-mongoose.connect('mongodb://localhost:27017/LearningProject')
+var apiRouter = require('./api/api');
+require('./passport/config')(passport);
+var configProject =  require('./constants.js');
+
+mongoose.connect(configProject.MONGODB_URI)
     .then(x => { console.log('Success MongoDB') })
     .catch(x => console.error(x));
 
-require('./passport/config')(passport);
+
 
 const app = express();
+app.use(fileUpload({
+    limits: { fileSize: configProject.MAX_SIZE_FILE_MB * 1024 * 1024 },
+    abortOnLimit: true,
+    createParentPath: true,}));
+
 app.use(cors());
 app.use(function(req, res, next) {
     // Website you wish to allow to connect

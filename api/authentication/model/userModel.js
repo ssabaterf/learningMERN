@@ -5,6 +5,9 @@ const UserSchema = new mongoose.Schema({
     hash: String,
     salt: String,
     rol: { type: mongoose.Schema.Types.ObjectId, ref: 'Rol' },
+    email: String,
+    token: String,
+    estado: String,
     image: String
 }, { collection: 'user-data' });
 

@@ -25,6 +25,8 @@ module.exports = (passport) => {
 
             // This flow look familiar?  It is the same as when we implemented
             // the `passport-local` strategy
+            if(user._doc.estado=="Waiting Validation")
+                return done(err, false);
             if (err) {
                 return done(err, false);
             }
